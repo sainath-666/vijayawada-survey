@@ -1,0 +1,1 @@
+SampleID,Date,Name,Contact,Email,Address,Ward,GPS_Lat,GPS_Lon,GPS_Acc,HH_Size,HH_Income,Members_JSON,Vehicle_Car,Vehicle_TwoWheeler,Vehicle_Auto,Vehicle_Cycle,Vehicle_Truck,Trips_JSON,Exp_Q1_OverallRating,Exp_Q2_Frequency,Exp_Q3_SafetyIncidents,Exp_Q4_UnsafeTimes,Exp_Q5_AccessQuality,Exp_Q6_AccessFactors,Exp_Q7_FootpathCondition,Likert_JSON,Feedback,SubmittedAt

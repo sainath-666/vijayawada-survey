@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Vijayawada Public Transport Survey / విజయవాడ ప్రజా రవాణా సర్వే</title>
+<style>
+  :root{--brand:#2563eb;--ink:#111;--bd:#e5e7eb;--muted:#475569}
+  body{font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;background:#f8fafc;color:var(--ink);margin:0 auto;max-width:980px;padding:.75rem}
+  h1{text-align:center;color:#1e3a8a;font-size:1.25rem;margin:.4rem 0 1rem}
+  h2{background:var(--brand);color:#fff;padding:.55rem .8rem;border-radius:.6rem;margin:0 0 .7rem;font-size:1rem}
+  .card{background:#fff;border:1px solid var(--bd);border-radius:.7rem;box-shadow:0 2px 6px rgba(0,0,0,.05);margin:0 0 1rem;padding:.85rem}
+  label{font-weight:700;display:block;margin-top:.5rem}
+  .sub{font-weight:500;color:var(--muted);display:block;margin:.15rem 0 .35rem}
+  input,select,textarea{width:100%;padding:.5rem;border:1px solid #cbd5e1;border-radius:.5rem;font-size:.95rem}
+  table{width:100%;border-collapse:collapse;margin-top:.5rem}
+  th,td{border:1px solid var(--bd);padding:.45rem;text-align:center;vertical-align:middle}
+  th{background:#f1f5f9;font-weight:700}
+  .btn{background:var(--brand);color:#fff;border:none;padding:.55rem .9rem;border-radius:.55rem;font-weight:700;cursor:pointer}
+  .btn.ghost{background:#eef2ff;color:#1d4ed8}
+  .btn.full{width:100%}
+  .row{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
+  .pill{display:inline-block;background:#f1f5f9;border:1px solid var(--bd);border-radius:999px;padding:.15rem .6rem;font-size:.85rem;color:#0f172a}
+  .transfer{border:1px dashed #93c5fd;border-radius:.6rem;padding:.6rem;margin:.5rem 0;background:#f8fafc}
+  details summary{cursor:pointer;background:#e0e7ff;padding:.55rem;border-radius:.55rem;font-weight:800}
+  details[open] summary{background:#c7d2fe}
+  .likert-item{margin:.6rem 0}
+  .muted{color:#64748b}
+  @media (max-width:560px){table,th,td{font-size:.85rem}}
+</style>
+</head>
+<body>
+<h1>Vijayawada Public Transport Survey / విజయవాడ ప్రజా రవాణా సర్వే</h1>
+
+<!-- A. GENERAL -->
+<div class="card">
+  <h2>General Details / సాధారణ వివరాలు</h2>
+  <label>ID (Auto)</label><input id="SampleID" readonly>
+  <label>Date / తేదీ</label><input id="Date" type="date">
+  <label>Name of Respondent / సమాధానదారు పేరు</label><input id="Name">
+  <label>Contact No (Optional)</label><input id="Contact" type="tel" placeholder="e.g., 98765 43210">
+  <label>Email ID (Optional)</label><input id="Email" type="email" placeholder="name@example.com">
+  <label>Address / చిరునామా</label><input id="Address" placeholder="House/Street/Landmark">
+  <label>Ward No / Landmark / వార్డు సంఖ్య / గుర్తింపు స్థలం</label><input id="Ward" placeholder="e.g., Ward 23 or near Bus Stand">
+  <div class="row" style="margin-top:.4rem">
+  <div class="row" style="margin-top:.4rem">
+    <button class="btn" id="btnGeo" type="button">📍 Get Location / స్థానాన్ని పొందండి</button>
+    <span id="geoInfo" class="pill">GPS: —</span>
+  </div>
+</div>
+
+<!-- B. DEMOGRAPHIC & ECONOMIC -->
+<div class="card">
+  <h2>Demographic & Economic Profile / జనసాంద్రత మరియు ఆర్థిక వివరాలు</h2>
+    <label>Household Size / గృహ పరిమాణం</label>
+  <input id="HHSize" type="number" min="1" placeholder="Number of persons in household">
+  <label>Household Monthly Income / గృహ నెలవారీ ఆదాయం</label>
+  <select id="HHIncome">
+    <option value="">-- Select --</option>
+    <option>Below ₹10,000</option>
+    <option>₹10,000–₹25,000</option>
+    <option>₹25,000–₹50,000</option>
+    <option>₹50,000–₹1,00,000</option>
+    <option>Above ₹1,00,000</option>
+  </select>
+  <button class="btn ghost" id="btnAddMember" type="button">+ Add Member / సభ్యుడు చేర్చండి</button>
+  <table id="membersTbl">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Gender / లింగం</th>
+        <th>Age / వయస్సు</th>
+        <th>License / లైసెన్స్</th>
+        <th>Education / విద్య</th>
+        <th>Occupation / వృత్తి</th>
+        <th>Income / ఆదాయం</th>
+        <th>Monthly Transport Expenditure (₹)</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<!-- C. VEHICLE OWNERSHIP -->
+<div class="card">
+  <h2>Vehicle Ownership / వాహనాల యాజమాన్యం</h2>
+  <table id="vehTbl">
+    <thead><tr><th>Vehicle / వాహనం</th><th>Count / సంఖ్య</th></tr></thead>
+    <tbody>
+      <tr><td>Car / కారు</td><td><input type="number" min="0" value="0"></td></tr>
+      <tr><td>Two Wheeler / 2-వీలర్</td><td><input type="number" min="0" value="0"></td></tr>
+      <tr><td>Auto / ఆటో</td><td><input type="number" min="0" value="0"></td></tr>
+      <tr><td>Cycle / సైకిల్</td><td><input type="number" min="0" value="0"></td></tr>
+      <tr><td>Truck / ట్రక్</td><td><input type="number" min="0" value="0"></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- D. TRIP DETAILS -->
+<div class="card">
+  <h2>Trip Details / ప్రయాణ వివరాలు</h2>
+  <button class="btn ghost" id="btnAddTrip" type="button">+ Add Trip / ప్రయాణం చేర్చండి</button>
+  <div id="tripContainer"></div>
+</div>
+
+<!-- E. PAST EXPERIENCE & ACCESSIBILITY (EXACT TEXT, RADIO) -->
+<div class="card" id="expSection">
+  <h2>Past Experience & Accessibility / గత అనుభవం మరియు ప్రాప్యత</h2>
+
+  <!-- Q1 -->
+  <label>1. How would you rate your overall past experience with public transport services in Vijayawada over the last 12 months?
+    <span class="sub">గత 12 నెలల్లో విజయవాడల్ల ప్రజా రవాణా సేవలతో మీ మొతతం గత అనుభవాన్ని మీరు ఎలా రేట్ చేస్తతరు?</span>
+  </label>
+  <div>
+    <label><input type="radio" name="exp1" value="1 - Very Poor"> a) 1 = Very Poor / చాలా చెడు</label>
+    <label><input type="radio" name="exp1" value="2 - Poor"> b) 2 = Poor / చెడు</label>
+    <label><input type="radio" name="exp1" value="3 - Neutral"> c) 3 = Neutral / తటస్థం</label>
+    <label><input type="radio" name="exp1" value="4 - Good"> d) 4 = Good / మంచిది</label>
+    <label><input type="radio" name="exp1" value="5 - Very Good"> e) 5 = Very Good / చాలా మంచిది</label>
+  </div>
+
+  <!-- Q2 -->
+  <label>2. Over the past 12 months, how frequently have you used public transport services for your regular travel needs?
+    <span class="sub">గత 12 నెలల్లో , మీ స్తధారణ ప్రయాణ అవసరాల కోసం మీరు ఎంత తరచుగా ప్రజా రవాణా సేవలను ఉరయోగంచారు?</span>
+  </label>
+  <div>
+    <label><input type="radio" name="exp2" value="Daily (5-7/wk)"> a) Daily (5–7 times per week) / రోజూ</label>
+    <label><input type="radio" name="exp2" value="Frequently (3-4/wk)"> b) Frequently (3–4 times per week) / తరచుగా</label>
+    <label><input type="radio" name="exp2" value="Occasionally (1-2/wk)"> c) Occasionally (1–2 times per week) / అప్పుడప్పుడు</label>
+    <label><input type="radio" name="exp2" value="Rarely (<1/wk)"> d) Rarely (less than once per week) / అరుదుగా</label>
+    <label><input type="radio" name="exp2" value="Never used"> e) Never used / ఎప్పుడూ ఉపయోగించలేదు</label>
+  </div>
+
+  <!-- Q3 -->
+  <label>3. Have you personally experienced or witnessed any safety/security incidents while using public transport in Vijayawada during the past 12 months?
+    <span class="sub">గత 12 నెలల్లో విజయవాడల్ల ప్రజా రవాణాను ఉరయోగస్తతన్ి ప్పు డు మీరు వయ క్తతగతంగా ఏవైనా భప్రతా/భప్రతా సంఘటన్లను ఎదురుకునాి రా లేదా చూశారా?</span>
+  </label>
+  <div>
+    <label><input type="radio" name="exp3" value="Pickpocketing/theft"> a) Pickpocketing/theft of personal belongings</label>
+    <label><input type="radio" name="exp3" value="Sexual harassment"> b) Inappropriate touching/sexual harassment</label>
+    <label><input type="radio" name="exp3" value="Verbal abuse"> c) Verbal abuse/threatening behavior</label>
+    <label><input type="radio" name="exp3" value="Physical assault"> d) Physical assault or violence</label>
+    <label><input type="radio" name="exp3" value="Accidents"> e) Accidents (vehicle-related injuries)</label>
+    <label><input type="radio" name="exp3" value="Overcrowding unsafe"> f) Feeling unsafe due to overcrowding</label>
+    <label><input type="radio" name="exp3" value="Aggressive passengers"> g) Other aggressive behaviour from passengers</label>
+    <label><input type="radio" name="exp3" value="Staff disrespect"> h) Disrespectful behaviour from drivers/staff</label>
+  </div>
+
+  <!-- Q4 -->
+  <label>4. Based on your past experiences, during which times do you feel most unsafe while using public transport services?
+    <span class="sub">మీ గత అనుభవాల ఆధారంగా, ప్రజా రవాణా సేవలను ఉరయోగస్తతన్ి ప్పు డు మీరు ఏ సమయాల్లో అతయ ంత అస్తరక్షితంగా భావిస్తతరు?</span>
+  </label>
+  <div>
+    <label><input type="radio" name="exp4" value="Early morning"> a) Early morning hours (before 7:00 AM)</label>
+    <label><input type="radio" name="exp4" value="Daytime"> b) Regular daytime hours (7:00 AM - 6:00 PM)</label>
+    <label><input type="radio" name="exp4" value="Evening"> c) Evening hours (6:00 PM - 9:00 PM)</label>
+    <label><input type="radio" name="exp4" value="Late night"> d) Late night hours (after 9:00 PM)</label>
+    <label><input type="radio" name="exp4" value="Peak/rush"> e) Peak/rush hours (regardless of time)</label>
+    <label><input type="radio" name="exp4" value="All times equal"> f) I feel equally safe/unsafe at all times</label>
+    <label><input type="radio" name="exp4" value="Not used enough"> g) I have not used public transport enough to form an opinion</label>
+  </div>
+
+  <!-- Q5 -->
+  <label>5. How would you rate the quality of access from your home/workplace to the nearest bus stop?
+    <span class="sub">మీ ఇంటి/కారాయ లయం నుండి సమీర బస్ స్టస్తప్ వరకు దారిన్న మీరు ఎలా రేటింగ్ చేస్తతరు?</span>
+  </label>
+  <div>
+    <label><input type="radio" name="exp5" value="Very Poor"> a) Very Poor</label>
+    <label><input type="radio" name="exp5" value="Poor"> b) Poor</label>
+    <label><input type="radio" name="exp5" value="Average"> c) Average</label>
+    <label><input type="radio" name="exp5" value="Good"> d) Good</label>
+    <label><input type="radio" name="exp5" value="Very Good"> e) Very Good</label>
+  </div>
+
+  <!-- Q6 -->
+  <label>6. What factors make access to the bus stop easier or difficult for you?
+    <span class="sub">బస్ స్టస్తప్క్త చేరుకోవడం మీకు స్తలభతరం లేదా కష్పతరం చేసే అంశాలు ఏమిటి?</span>
+  </label>
+  <div>
+    <label><input type="radio" name="exp6" value="Distance"> a) Distance to the bus stop</label>
+    <label><input type="radio" name="exp6" value="Road Safety"> b) Road Safety (traffic, crossings)</label>
+    <label><input type="radio" name="exp6" value="Shade/Shelter"> c) Availability of shade/shelter</label>
+    <label><input type="radio" name="exp6" value="Street Lighting"> d) Street Lighting</label>
+    <label><input type="radio" name="exp6" value="Signage/Directions"> e) Signage and Directions</label>
+    <label><input type="radio" name="exp6" value="Others"> f) others</label>
+  </div>
+
+  <!-- Q7 -->
+  <label>7. How would you rate the availability and condition of footpaths along your route to the bus stop?
+    <span class="sub">బస్ స్టస్తప్ కు మీ మారగంల్ల ఫుట్ పాత్ ల లభయ త మరియు స్టితినన్న మీరు ఎలా రేట్ చేస్తతరు?</span>
+  </label>
+  <div>
+    <label><input type="radio" name="exp7" value="No footpaths"> a) No Footpaths available</label>
+    <label><input type="radio" name="exp7" value="Available poor"> b) Footpaths available but in poor condition</label>
+    <label><input type="radio" name="exp7" value="Well-designed continuous safe"> c) Well-designed, continuous, and safe footpaths</label>
+    <label><input type="radio" name="exp7" value="Obstructed/discontinuous"> d) Footpaths available but partially obstructed or discontinuous</label>
+    <label><input type="radio" name="exp7" value="Continuous moderately maintained"> e) Continuous and moderately maintained footpaths</label>
+  </div>
+</div>
+
+<!-- F. ATTITUDINAL STATEMENTS (LIKERT, DROPDOWNS) -->
+<div class="card">
+  <h2>Attitudinal Statements / భావనాత్మక ప్రశ్నలు</h2>
+  <p><strong>Scale:</strong> 1 = Strongly Disagree / పూర్తిగా విరుద్ధం, 2 = Disagree / విభేధం, 3 = Neutral / తటస్థం, 4 = Agree / అంగీకారం, 5 = Strongly Agree / పూర్తిగా అంగీకారం</p>
+  <div id="likertContainer"></div>
+</div>
+<!-- ===================== G. FEEDBACK ===================== -->
+<div class="card">
+  <h2>Suggestions / Overall Feedback / సూచనలు & సమగ్ర అభిప్రాయం</h2>
+  <label>Please share any suggestions or feedback to improve Vijayawada public transport services.</label>
+  <textarea id="Feedback" placeholder="Enter your feedback here..."></textarea>
+</div>
+<!-- H. SUBMIT -->
+<div class="card">
+  <button class="btn full" id="btnSubmit" type="button">Submit / సమర్పించండి</button>
+</div>
+
+
+
+<script>
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+
+const GENDERS = ['Male / పురుషుడు','Female / మహిళ','Other / ఇతర'];
+const LICENSE = ['Yes / అవును','No / కాదు'];
+const EDUCATION = ['Illiterate','Primary','Secondary','Higher Secondary','Diploma','Graduate','Post Graduate','Other'];
+const OCCUPATIONS = ['Student','Govt Employee','Private Employee','Business','Homemaker','Retired','Other'];
+const INCOME = ['No Income','< ₹10,000','₹10k–₹25k','₹25k–₹50k','₹50k–₹1L','> ₹1L'];
+const FREQ = ['Daily / రోజూ','Weekly / వారానికి ఒకసారి','Monthly / నెలకు ఒకసారి','Occasionally / అప్పుడప్పుడు'];
+const PURPOSE = [
+  'Work / ఉద్యోగం',
+  'Education / విద్య',
+  'Business / వ్యాపారం',
+  'Hospital / ఆసుపత్రి',
+  'Recreation / వినోదం',
+  'Shopping / షాపింగ్',
+  'Other / ఇతర',
+  'Return Home / ఇంటికి తిరిగి వెళ్ళు'
+];
+const MODES = [
+  'Walk / నడక',
+  'Cycle / సైకిల్',
+  '2 Wheeler / 2-వీలర్',
+  'Auto / ఆటో',
+  'Shared Auto / షేర్ ఆటో',
+  'Tata Magic / టాటా మ్యాజిక్',
+  'Car / కారు',
+  'Ola/Uber/Rapido',
+  'City Bus / సిటీ బస్',
+  'State Bus / స్టేట్ బస్'
+];
+
+window._gps = window._gps || {};
+
+function makeSelect(options){
+  const s = document.createElement('select');
+  s.innerHTML = '<option></option>' + options.map(o => `<option>${o}</option>`).join('');
+  return s;
+}
+
+/* ---------- Members ---------- */
+function addMember(){
+  const tb = $('#membersTbl tbody');
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${tb.children.length + 1}</td>`;
+  const tdG = document.createElement('td'); tdG.append(makeSelect(GENDERS));
+  const tdA = document.createElement('td'); tdA.innerHTML = "<input type='number' min='0'>";
+  const tdL = document.createElement('td'); tdL.append(makeSelect(LICENSE));
+  const tdE = document.createElement('td'); tdE.append(makeSelect(EDUCATION));
+  const tdO = document.createElement('td'); tdO.append(makeSelect(OCCUPATIONS));
+  const tdI = document.createElement('td'); tdI.append(makeSelect(INCOME));
+  const tdEx = document.createElement('td'); tdEx.innerHTML = "<input type='number' min='0' placeholder='₹/month'>";
+  const tdDel = document.createElement('td'); tdDel.innerHTML = "<button class='btn' type='button'>✕</button>";
+  tdDel.querySelector('button').onclick = () => {
+    tr.remove();
+    $$('#membersTbl tbody tr').forEach((r,i) => r.children[0].textContent = i + 1);
+  };
+  tr.append(tdG, tdA, tdL, tdE, tdO, tdI, tdEx, tdDel);
+  tb.append(tr);
+}
+
+/* ---------- Trips & Transfers ---------- */
+function addTripBlock(){
+  const cont = $('#tripContainer');
+  const n = cont.children.length + 1;
+  const wrap = document.createElement('div');
+  wrap.className = 'card';
+  wrap.innerHTML = `
+    <h3>Trip ${n} / ప్రయాణం ${n}</h3>
+    <label>Member No / సభ్యుడు సంఖ్య</label><input placeholder="e.g., 1">
+    <label>Main Origin / ప్రధాన ప్రారంభం</label><input>
+    <label>Main Destination / ప్రధాన గమ్యం</label><input>
+    <label>Frequency / అవృత్తి</label>${makeSelect(FREQ).outerHTML}
+    <label>Purpose / ఉద్దేశ్యం</label>${makeSelect(PURPOSE).outerHTML}
+    <label>Trip Length (km) / ప్రయాణ దూరం (కి.మీ.)</label><input type="number" min="0" step="0.1">
+    <label>Main Mode of Travel / ప్రధాన రవాణా రకం</label>${makeSelect(MODES).outerHTML}
+    <label>Travel Cost (₹) / ప్రయాణ ఖర్చు</label><input type="number" min="0">
+    <label>Travel Time (min) / ప్రయాణ సమయం</label><input type="number" min="0">
+    <label>Waiting Time (min) / వేచి సమయం</label><input type="number" min="0">
+    <label>No. of Transfers / బదిలీల సంఖ్య</label><input type="number" min="0" value="0">
+    <div class="transfers"></div>
+    <button class="btn" type="button">✕ Remove Trip</button>
+  `;
+  wrap.querySelector('button').onclick = () => wrap.remove();
+
+  const transfersDiv = wrap.querySelector('.transfers');
+  const numInputs = wrap.querySelectorAll('input[type=number]');
+  const countInput = numInputs[numInputs.length - 1]; // last number input = transfers count
+
+  countInput.onchange = () => {
+    transfersDiv.innerHTML = '';
+    const n = parseInt(countInput.value || '0', 10);
+    for (let i = 1; i <= n; i++) {
+      const t = document.createElement('div');
+      t.className = 'transfer';
+      t.innerHTML = `
+        <strong>Transfer ${i} / బదిలీ ${i}</strong>
+        <label>Stop Name / నిలుపుదల పేరు</label><input>
+        <label>Mode to Stop / రవాణా రకం</label>${makeSelect(MODES).outerHTML}
+        <label>Travel Time (min) / ప్రయాణ సమయం</label><input type="number" min="0">
+        <label>Travel Cost (₹) / ఖర్చు</label><input type="number" min="0">
+        <label>Waiting Time (min) / వేచి సమయం</label><input type="number" min="0">
+      `;
+      transfersDiv.append(t);
+    }
+  };
+
+  cont.append(wrap);
+}
+
+/* ---------- Past Experience collector ---------- */
+function collectExperience(){
+  const get = n => (document.querySelector(`input[name="exp${n}"]:checked`) || {}).value || '';
+  return {
+    q1: get(1),
+    q2: get(2),
+    q3: get(3),
+    q4: get(4),
+    q5: get(5),
+    q6: get(6),
+    q7: get(7),
+  };
+}
+
+/* ---------- Likert groups ---------- */
+const LIKERT_GROUPS = [
+  {v:'Perceived Accessibility (PAC) / అనుభవించబడిన ప్రాప్యత', items:[
+    ['Using public transportation makes it simple to complete daily activities.','రోజువారీ కారయ కలాపాలను పూరిత చేయడాన్నక్త బస్తు ప్రయాణం స్తలువు గా ఉంటంది'],
+    ['If public transportation were my only mode of travel, I would still be able to maintain my preferred lifestyle.','బసేు నా ఏకైక ప్రయాణ మాధ్యమం అయిన్రు టికీ నా జీవన్ శైలిన్న యాథావితం గా కొన్స్తగంచగలను'],
+    ['Using public transportation enables me to engage in the activities I prefer','బస్తును ఉరయోగంచడం వలో నాకు కావలిన్ కారయ ప్కమాల ల్ల పాల్గగన్గలుగతునాి ను'],
+    ['Public transportation provides satisfactory access to my preferred activities.','బస్తు ప్రయాణం నాకు కావలిన్ కారయ ప్కమాలక్త అందుబాటల్ల ఉంటంది']
+  ]},
+  {v:'Attitudes (TPB Component) / మనోభావాలు', items:[
+    ['I feel comfortable using public transport for my trips.','నా ప్రయాణాలకు బస్తు ఉరయోగంచడం నాకు సౌకరయ ం గా అన్నపిస్తతంది'],
+    ['Public transport meets my expectations in terms of convenience and comfort','బస్తు ప్రయాణం సౌలభయగాను మరియు సౌకరయ వంతం గాను నా అంచనాలక్త సరిరడతుంది']
+  ]},
+  {v:'Social influence (TPB - Subjective Norms) / సామాజిక ప్రభావం', items:[
+    ['Most people whose opinion I value use public transport regularly','నేను ఎవరి అభిప్పాయాన్ని గౌరవిస్తతనో, వారు ప్కమం తరు కుండా బస్తును ఉరయోగస్తతనాి రు'],
+    ['People I respect would approve if I used public transport more often','నేను బస్తు న్న తరుచుగా ఉరయోగచడాన్న నేను గౌరవించే వయకుతలు ఆమోదిస్తతరు']
+  ]},
+  {v:'Perceived control (TPB - PBC) / నియంత్రణ భావన', items:[
+    ['I feel I have control over whether I can use public transport','నేనుస్టబస్తు న్నస్టఉరయోగంచవచాా స్టలేదాస్టఅనేస్టదాన్నపైస్టనాకుస్టన్నయంప్తణస్టఉంరన్నస్టనేనుస్ట భావిస్తతనాి ను.'],
+    ['I can easily arrange my activities around the public transport schedule','నా రోజు వారి కారయ ప్కమాలను న్నరవ రితంచడాన్నక్త బస్తు షెడ్యయల్ అనుగుణం గా వుంది']
+  ]},
+  {v:'Behavioural intention (TPB - Intention) / ప్రవర్తనా ఉద్దేశ్యం', items:[
+    ['I intend to use public transport as my main mode of travel','బస్తును నా ప్రయాణాన్నక్త ప్రధాన్ మరయయంగా ఉరయోగంచుకోవాలనుకుంటనాి ను'],
+    ['I am willing to replace some of my current trips with public transport','నా ప్రస్తతత ప్రయాణాల ల్ల కొన్ని ప్రయాణాలను బస్తు ప్రయాణాలు గా మారా కోగాలను']
+  ]},
+  {v:'Perceived Usefulness (TAM) / ఉపయోగకరత భావన', items:[
+    ['Using public transportation enables me to accomplish my daily travel tasks more quickly','బస్తు నుస్టఉరయోగంచడంస్టవలోస్టనాస్టరోజువారీస్టప్రయాణస్టరనులనుస్టమరింతస్టతవ రగాస్టపూరిత స్ట చ ేస్తకోగలుగుతునాి ను.'],
+    ['Public transportation stops/stations are easily accessible from my location','నా స్టప్పాంతం నుండి స్ట బస్తు స్టస్తప్స్టలు/సేపష్నుో స్తలభంగా చేరుకోవచుా .']
+  ]},
+  {v:'Perceived Ease of Use (TAM) / ఉపయోగ సులభత', items:[
+    ['Physical access to public transportation vehicles is easy for me (boarding, seating, etc.)','బస్తు ఎకక డం దిగడం కూరోా టాన్నక్త నాకు అనువుగా ఉంటంది'],
+    ['Overall, public transportation is easy to use for my needs.','మొత్తం గా, నా అవసరాలకు బస్తు ప్రయాణం సులభంగా ఉంటుంది.']
+  ]},
+  {v:'Habits (TIB) / అలవాట్లు', items:[
+    ['I routinely choose public transportation for my regular trips without thinking much about it.','నా సాధారణ ప్రయాణాలకు ఎక్కువగా ఆలోచించకుండా బస్తు న్నే ఎంచుకుంటాను.']
+  ]},
+  {v:'Perceived Safety / భద్రత భావన', items:[
+    ['I feel safe at public transport stations/stops when security measures such as CCTV cameras, proper lighting, and police presence are in place','బస్తు స్టసేపష్నుో/స్టస్తప్లల్ల CCTV కెమెరాలు, సరైన్ లైటింగ్ మరియు పోలీస్తల భప్రతా ఉన్ి ప్పు డు నేను స్తరక్షితంగా ఉన్ి టో అన్నపిస్తతంది.']
+  ]},
+  {v:'Self-efficacy & Confidence / స్వయంసామర్థ్యం', items:[
+    ['I can handle unexpected situations when using public transport','బస్తు ప్రయాణాల్లో ఊహంచన్న రరిితితుల ఎదురయినా నేను ఏదురుకోగలను.'],
+    ['I feel capable of using public transport in unfamiliar areas','నాకు తెలియన్న ప్పాంతాల్లో బస్తు ప్రయాణం ఉరయోగంచగలను అనే న్మమ కం నాకు వుంది']
+  ]},
+  {v:'Reliability & punctuality / విశ్వసనీయత & సమయపాలన', items:[
+    ['Public transport services are reliable and punctual','బస్తు సరీవ స్తో సమయపాలన్ కలిగన్వి']
+  ]},
+  {v:'Frequency & coverage / పౌనఃపున్యం & కవరేజ్', items:[
+    ['Public transport routes adequately cover the areas I need to visit','నేను తరుచుగా ప్రయాణంచే గమయ స్తతినాలకు బస్తు మారాగలు తగన్ంతగా వునాి యి.']
+  ]},
+  {v:'Cost & Value / ఖర్చు & విలువ', items:[
+    ['Cost of trip with public transportation is much cheaper when compared to other modes.','ఇతర రవాణా మారయ మాలతో పోలిసేత బస్తు ప్రయాణ చవకగా ఉంటంది.']
+  ]},
+  {v:'Assurance / విశ్వాసం', items:[
+    ['Drivers/ Employees behaviour builds passengers confidence','బస్తు డ్రైవరుో/ఉద్యయ గుల ప్రవరతన్ ప్రయాణీకులల్ల విశావ స్తన్ని పెంచుతుంది.'],
+    ['Buses and bus stops/stations are spacious, safe, clean and comfortable.','బస్తు లుస్టమరియుస్టస్తప్స్టలు/సేపష్నుోస్టవిశాలమైన్వి,స్టస్తరక్షితమైన్వి,స్టశుప్భంగాస్టమరియుస్ట స ౌకరయ వంతంగాస్టఉంటాయి.']
+  ]},
+  {v:'Tangibles / మూర్తిమత్వం', items:[
+    ['Vehicles are well-maintained and clean.','వాహనాలు బాగా నిర్వహించబడినవి మరియు శుభ్రమైనవి.'],
+    ['Infrastructure is visibly in good condition.','మౌలిక వసతులు దర్శనీయంగా మంచి స్థితిలో ఉన్నాయి.']
+  ]},
+  {v:'Empathy / అనుభూతి', items:[
+    ['Public transport staff treat passengers with respect and consideration.','ప్రజా రవాణా సిబ్బంది ప్రయాణీకులను గౌరవంగా చూస్తారు.'],
+    ['Ticket offices and other facilities are accessible.','టికెట్ కార్యాలయాలు మరియు ఇతర సౌకర్యాలు అందుబాటులో ఉన్నాయి.']
+  ]},
+  {v:'Responsiveness / స్పందన', items:[
+    ['Public transport services respond quickly to passenger complaints and suggestions.','ప్రయాణీకుల ఫిర్యాదులు మరియు సూచనలకు వేగంగా స్పందిస్తాయి.']
+  ]},
+  {v:'Convenience / సౌలభ్యం', items:[
+    ['1st and last mile connectivity is easy and convenient.','ఇంటి నుండి బస్తు స్టస్తప్/బస్తు స్టస్తప్ నుండి గమ్యం వరకు సౌలభ్యం ఉంది.']
+  ]},
+  {v:'Trust / నమ్మకం', items:[
+    ['I trust that any complaints or issues I raise to the conductor or depot office will be handled impartially.','కండక్టర్/డిపో కార్యాలయానికి ఇచ్చే ఫిర్యాదులు నిష్పాక్షికంగా పరిష్కరించబడతాయని నమ్మకం.']
+  ]},
+  {v:'Fairness & Travel Satisfaction / న్యాయం & సంతృప్తి', items:[
+    ['I believe that policies such as priority seating or concession fares are applied consistently and fairly on every trip.','ప్రాధాన్య సీటింగ్/రాయితీ చార్జీలు వంటి విధానాలు ప్రతిసారి న్యాయంగా వర్తిస్తాయని నమ్మకం.'],
+    ['Public transport meets my overall mobility needs','బస్తు నా అన్ని ప్రయాణ అవసరాలను తీరుస్తతంది']
+  ]},
+  {v:'Social Interaction / సామాజిక పరస్పర చర్య', items:[
+    ['I enjoy the social aspect of traveling by public transport','బస్తు ల్ల ప్రయాణంచడం వలో కలిగే స్తమాజిక కోణాన్ని నేను ఆస్తవ దిస్తతను.']
+  ]},
+];
+
+function renderLikert(){
+  const box = document.getElementById('likertContainer');
+  box.innerHTML = '';
+  const selectHTML = `
+    <select>
+      <option></option>
+      <option value="1">1 - Strongly Disagree / పూర్తిగా విరుద్ధం</option>
+      <option value="2">2 - Disagree / విభేధం</option>
+      <option value="3">3 - Neutral / తటస్థం</option>
+      <option value="4">4 - Agree / అంగీకారం</option>
+      <option value="5">5 - Strongly Agree / పూర్తిగా అంగీకారం</option>
+    </select>`;
+  LIKERT_GROUPS.forEach(g => {
+    const d = document.createElement('details');
+    d.innerHTML = `<summary>${g.v}</summary>`;
+    g.items.forEach((arr,ti) => {
+      const [en,te] = arr;
+      const row = document.createElement('div'); row.className = 'likert-item';
+      row.innerHTML = `
+        <label>${ti+1}. ${en}<br><span class="sub">${te}</span></label>
+        ${selectHTML}`;
+      d.append(row);
+    });
+    box.append(d);
+  });
+}
+
+/* ---------- Reset Form ---------- */
+function resetForm() {
+  // General
+  $('#Name').value = '';
+  $('#Contact').value = '';
+  $('#Email').value = '';
+  $('#Address').value = '';
+  $('#Ward').value = '';
+  $('#geoInfo').textContent = 'GPS: —';
+  window._gps = {};
+
+  // Members
+  $('#membersTbl tbody').innerHTML = '';
+  addMember();
+
+  // Vehicles
+  $$('#vehTbl tbody input').forEach(i => (i.value = '0'));
+
+  // Trips
+  $('#tripContainer').innerHTML = '';
+  addTripBlock();
+
+  // Experience
+  $$('#expSection input[type=radio]').forEach(r => (r.checked = false));
+
+  // Likert
+  $$('#likertContainer select').forEach(s => (s.value = ''));
+
+  // ID + Date
+  $('#SampleID').value = 'VJA-' + Date.now().toString(36).toUpperCase();
+  $('#Date').value = new Date().toISOString().slice(0, 10);
+}
+
+/* ---------- Geolocation ---------- */
+function getGeoLocation() {
+  const geoInfo = $('#geoInfo');
+  if (!navigator.geolocation) {
+    geoInfo.textContent = 'GPS not supported / GPS అందుబాటులో లేదు';
+    return;
+  }
+  geoInfo.textContent = 'Capturing... / స్థానం పొందుతోంది...';
+  navigator.geolocation.getCurrentPosition(
+    p => {
+      window._gps = {
+        lat: p.coords.latitude,
+        lon: p.coords.longitude,
+        acc: p.coords.accuracy
+      };
+      geoInfo.textContent = `Lat:${p.coords.latitude.toFixed(5)} Lon:${p.coords.longitude.toFixed(5)} (±${Math.round(p.coords.accuracy)}m)`;
+    },
+    () => (geoInfo.textContent = 'Unable to fetch location / స్థానం పొందలేకపోయాం'),
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+}
+
+/* ---------- Build Payload (what we send to backend) ---------- */
+function buildPayload() {
+  const general = {
+    SampleID: $('#SampleID').value.trim(),
+    Date: $('#Date').value,
+    Name: $('#Name').value.trim(),
+    Contact: $('#Contact').value.trim(),
+    Email: $('#Email').value.trim(),
+    Address: $('#Address').value.trim(),
+    Ward: $('#Ward').value.trim(),
+    GPS: window._gps || {}
+  };
+
+  const members = [];
+  $$('#membersTbl tbody tr').forEach(tr => {
+    const tds = tr.querySelectorAll('td');
+    members.push({
+      Gender: tds[1].querySelector('select').value,
+      Age: tds[2].querySelector('input').value,
+      License: tds[3].querySelector('select').value,
+      Education: tds[4].querySelector('select').value,
+      Occupation: tds[5].querySelector('select').value,
+      Income: tds[6].querySelector('select').value,
+      MonthlyTransportExpenditure: tds[7].querySelector('input').value
+    });
+  });
+
+  const vehicles = [];
+  $$('#vehTbl tbody tr').forEach(tr => {
+    const tds = tr.querySelectorAll('td');
+    vehicles.push({
+      Vehicle: tds[0].textContent.trim(),
+      Count: tds[1].querySelector('input').value
+    });
+  });
+
+  const trips = [];
+  $$('#tripContainer .card').forEach(card => {
+    const inputs = card.querySelectorAll('input, select');
+    if (!inputs.length) return;
+
+    const memberNo        = inputs[0].value;
+    const mainOrigin      = inputs[1].value;
+    const mainDestination = inputs[2].value;
+    const frequency       = inputs[3].value;
+    const purpose         = inputs[4].value;
+    const tripLengthKm    = inputs[5].value;
+    const mainMode        = inputs[6].value;
+    const travelCost      = inputs[7].value;
+    const travelTime      = inputs[8].value;
+    const waitingTime     = inputs[9].value;
+    const transfersCount  = inputs[10].value;
+
+    const transfers = [];
+    card.querySelectorAll('.transfer').forEach(t => {
+      const ti = t.querySelectorAll('input, select');
+      transfers.push({
+        StopName: ti[0].value,
+        ModeToStop: ti[1].value,
+        TravelTime: ti[2].value,
+        TravelCost: ti[3].value,
+        WaitingTime: ti[4].value
+      });
+    });
+
+    trips.push({
+      MemberNo: memberNo,
+      MainOrigin: mainOrigin,
+      MainDestination: mainDestination,
+      Frequency: frequency,
+      Purpose: purpose,
+      TripLengthKm: tripLengthKm,
+      MainMode: mainMode,
+      TravelCost: travelCost,
+      TravelTimeMin: travelTime,
+      WaitingTimeMin: waitingTime,
+      TransfersCount: transfersCount,
+      Transfers: transfers
+    });
+  });
+
+  const experience = collectExperience();
+
+  const likert = [];
+  $('#likertContainer').querySelectorAll('details').forEach(d => {
+    const groupTitle = d.querySelector('summary').textContent.trim();
+    const items = d.querySelectorAll('.likert-item');
+    items.forEach((item, idx) => {
+      const label = item.querySelector('label');
+      const questionText = label ? label.childNodes[0].textContent.trim() : '';
+      const response = item.querySelector('select').value;
+      likert.push({
+        Group: groupTitle,
+        QuestionIndex: idx + 1,
+        Question: questionText,
+        Response: response
+      });
+    });
+  });
+
+  const feedback = $('#Feedback').value.trim();
+
+  return {
+    General: general,
+    Members: members,
+    Vehicles: vehicles,
+    Trips: trips,
+    Experience: experience,
+    Likert: likert,
+    Feedback: feedback,
+    SubmittedAt: new Date().toISOString()
+  };
+}
+
+/* ---------- Submit ---------- */
+async function submitAll() {
+  const payload = buildPayload();
+
+  // Basic validation (you can tweak)
+  if (!payload.General.SampleID || !payload.General.Name || !payload.General.Address) {
+    alert('Please fill ID, Name, and Address / దయచేసి ID, పేరు, చిరునామా నమోదు చేయండి');
+    return;
+  }
+
+  if (!payload.Members || payload.Members.length === 0) {
+    alert('Please enter at least one household member / కనీసం ఒక గృహ సభ్యుని వివరాలు ఇవ్వండి');
+    return;
+  }
+  const hasEmptyMember = payload.Members.some(m =>
+    !m.Gender || !m.Age || !m.License || !m.Education || !m.Occupation || !m.Income
+  );
+  if (hasEmptyMember) {
+    alert('Please fill all demographic details / దయచేసి అన్ని జనసాంఖ్యాక వివరాలను పూర్తి చేయండి');
+    return;
+  }
+
+  if (!payload.Trips || payload.Trips.length === 0) {
+    alert('Please add at least one trip / కనీసం ఒక ట్రిప్ వివరాలు ఇవ్వండి');
+    return;
+  }
+  const hasEmptyTrip = payload.Trips.some(t =>
+    !t.MainOrigin || !t.MainDestination || !t.Frequency || !t.Purpose || !t.MainMode
+  );
+  if (hasEmptyTrip) {
+    alert('Please fill all trip fields / దయచేసి ట్రిప్ వివరాలను పూర్తి చేయండి');
+    return;
+  }
+
+  if (!payload.Experience || Object.values(payload.Experience).some(v => !v)) {
+    alert('Please answer all past experience questions / దయచేసి అన్ని గత అనుభవ ప్రశ్నలకు సమాధానం ఇవ్వండి');
+    return;
+  }
+
+  if (!payload.Likert || payload.Likert.length === 0 || payload.Likert.some(l => !l.Response)) {
+    alert('Please answer all attitudinal questions / దయచేసి అన్ని అభిప్రాయ సంబంధిత ప్రశ్నలకు సమాధానం ఇవ్వండి');
+    return;
+  }
+
+  try {
+    const res = await fetch("http://localhost:3000/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    if (res.ok) {
+      alert("Survey submitted successfully / సర్వే విజయవంతంగా సమర్పించబడింది");
+      resetForm();
+    } else {
+      alert("Error saving data on server");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Server error / సర్వర్ లోపం");
+  }
+}
+
+/* ---------- Init ---------- */
+document.addEventListener('DOMContentLoaded', () => {
+  renderLikert();
+  resetForm();
+
+  $('#btnGeo').addEventListener('click', getGeoLocation);
+  $('#btnAddMember').addEventListener('click', addMember);
+  $('#btnAddTrip').addEventListener('click', addTripBlock);
+  $('#btnSubmit').addEventListener('click', submitAll);
+});
+</script>
+
+
+
+
+</body>
+</html>

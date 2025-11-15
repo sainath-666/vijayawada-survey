@@ -12,5 +12,13 @@
   "license": "ISC",
   "dependencies": {
     "express": "^5.1.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainath-666/vijayawada-survey.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sainath-666/vijayawada-survey/issues"
+  },
+  "homepage": "https://github.com/sainath-666/vijayawada-survey#readme"
 }

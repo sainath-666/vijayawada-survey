@@ -634,46 +634,6 @@ function buildPayload() {
 async function submitAll() {
   const payload = buildPayload();
 
-  // Basic validation (you can tweak)
-  if (!payload.General.SampleID || !payload.General.Name || !payload.General.Address) {
-    alert('Please fill ID, Name, and Address / దయచేసి ID, పేరు, చిరునామా నమోదు చేయండి');
-    return;
-  }
-
-  if (!payload.Members || payload.Members.length === 0) {
-    alert('Please enter at least one household member / కనీసం ఒక గృహ సభ్యుని వివరాలు ఇవ్వండి');
-    return;
-  }
-  const hasEmptyMember = payload.Members.some(m =>
-    !m.Gender || !m.Age || !m.License || !m.Education || !m.Occupation || !m.Income
-  );
-  if (hasEmptyMember) {
-    alert('Please fill all demographic details / దయచేసి అన్ని జనసాంఖ్యాక వివరాలను పూర్తి చేయండి');
-    return;
-  }
-
-  if (!payload.Trips || payload.Trips.length === 0) {
-    alert('Please add at least one trip / కనీసం ఒక ట్రిప్ వివరాలు ఇవ్వండి');
-    return;
-  }
-  const hasEmptyTrip = payload.Trips.some(t =>
-    !t.MainOrigin || !t.MainDestination || !t.Frequency || !t.Purpose || !t.MainMode
-  );
-  if (hasEmptyTrip) {
-    alert('Please fill all trip fields / దయచేసి ట్రిప్ వివరాలను పూర్తి చేయండి');
-    return;
-  }
-
-  if (!payload.Experience || Object.values(payload.Experience).some(v => !v)) {
-    alert('Please answer all past experience questions / దయచేసి అన్ని గత అనుభవ ప్రశ్నలకు సమాధానం ఇవ్వండి');
-    return;
-  }
-
-  if (!payload.Likert || payload.Likert.length === 0 || payload.Likert.some(l => !l.Response)) {
-    alert('Please answer all attitudinal questions / దయచేసి అన్ని అభిప్రాయ సంబంధిత ప్రశ్నలకు సమాధానం ఇవ్వండి');
-    return;
-  }
-
   try {
     const res = await fetch("/submit", {
       method: "POST",

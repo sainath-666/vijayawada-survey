@@ -35,48 +35,17 @@ if (!fs.existsSync(filePath)) {
     // Demographic
     "HH_Size",
     "HH_Income",
-  ];
-
-  // Members - Individual columns for each member
-  for (let i = 1; i <= maxMembers; i++) {
-    headers.push(
-      `Member${i}_Gender`,
-      `Member${i}_Age`,
-      `Member${i}_License`,
-      `Member${i}_Education`,
-      `Member${i}_Occupation`,
-      `Member${i}_Income`,
-      `Member${i}_TransportExpenditure`
-    );
-  }
-
-  // Vehicles
-  headers.push(
+    // Members as JSON
+    "Members_JSON",
+    // Vehicles
     "Vehicle_Car",
     "Vehicle_TwoWheeler",
     "Vehicle_Auto",
     "Vehicle_Cycle",
-    "Vehicle_Truck"
-  );
-
-  // Trips - Individual columns for each trip
-  for (let i = 1; i <= maxTrips; i++) {
-    headers.push(
-      `Trip${i}_Purpose`,
-      `Trip${i}_Start`,
-      `Trip${i}_End`,
-      `Trip${i}_Frequency`,
-      `Trip${i}_Mode`,
-      `Trip${i}_Distance`,
-      `Trip${i}_Time`,
-      `Trip${i}_Cost`,
-      `Trip${i}_TransferCount`
-    );
-    // Transfer details for each trip
-    for (let j = 1; j <= maxTransfers; j++) {
-      headers.push(`Trip${i}_Transfer${j}_From`, `Trip${i}_Transfer${j}_To`);
-    }
-  }
+    "Vehicle_Truck",
+    // Trips as JSON
+    "Trips_JSON",
+  ];
 
   // Experience (7 questions)
   headers.push(
@@ -140,55 +109,17 @@ app.post("/submit", (req, res) => {
     // Demographic
     csvSafe(p.Demographic?.HHSize || ""),
     csvSafe(p.Demographic?.HHIncome || ""),
-  ];
-
-  // Members - Expand each member into separate columns
-  const members = p.Members || [];
-  for (let i = 0; i < maxMembers; i++) {
-    const member = members[i] || {};
-    row.push(
-      csvSafe(member.Gender || ""),
-      csvSafe(member.Age || ""),
-      csvSafe(member.License || ""),
-      csvSafe(member.Education || ""),
-      csvSafe(member.Occupation || ""),
-      csvSafe(member.Income || ""),
-      csvSafe(member.TransportExp || "")
-    );
-  }
-
-  // Vehicles
-  row.push(
+    // Members as JSON
+    csvSafe(JSON.stringify(p.Members || [])),
+    // Vehicles
     csvSafe(getVehicleCount("Car")),
     csvSafe(getVehicleCount("Two Wheeler")),
     csvSafe(getVehicleCount("Auto")),
     csvSafe(getVehicleCount("Cycle")),
-    csvSafe(getVehicleCount("Truck"))
-  );
-
-  // Trips - Expand each trip into separate columns
-  const trips = p.Trips || [];
-  for (let i = 0; i < maxTrips; i++) {
-    const trip = trips[i] || {};
-    row.push(
-      csvSafe(trip.Purpose || ""),
-      csvSafe(trip.Start || ""),
-      csvSafe(trip.End || ""),
-      csvSafe(trip.Frequency || ""),
-      csvSafe(trip.Mode || ""),
-      csvSafe(trip.Distance || ""),
-      csvSafe(trip.Time || ""),
-      csvSafe(trip.Cost || ""),
-      csvSafe(trip.TransferCount || "")
-    );
-
-    // Transfers for this trip
-    const transfers = trip.Transfers || [];
-    for (let j = 0; j < maxTransfers; j++) {
-      const transfer = transfers[j] || {};
-      row.push(csvSafe(transfer.From || ""), csvSafe(transfer.To || ""));
-    }
-  }
+    csvSafe(getVehicleCount("Truck")),
+    // Trips as JSON
+    csvSafe(JSON.stringify(p.Trips || [])),
+  ];
 
   // Experience
   row.push(

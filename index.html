@@ -334,13 +334,13 @@ function addTripBlock(){
 function collectExperience(){
   const get = n => (document.querySelector(`input[name="exp${n}"]:checked`) || {}).value || '';
   return {
-    q1: get(1),
-    q2: get(2),
-    q3: get(3),
-    q4: get(4),
-    q5: get(5),
-    q6: get(6),
-    q7: get(7),
+    Q1: get(1),
+    Q2: get(2),
+    Q3: get(3),
+    Q4: get(4),
+    Q5: get(5),
+    Q6: get(6),
+    Q7: get(7)
   };
 }
 
@@ -463,6 +463,10 @@ function resetForm() {
   $('#geoInfo').textContent = 'GPS: —';
   window._gps = {};
 
+  // Demographic
+  $('#HHSize').value = '';
+  $('#HHIncome').value = '';
+
   // Members
   $('#membersTbl tbody').innerHTML = '';
   addMember();
@@ -530,7 +534,7 @@ function buildPayload() {
       Education: tds[4].querySelector('select').value,
       Occupation: tds[5].querySelector('select').value,
       Income: tds[6].querySelector('select').value,
-      MonthlyTransportExpenditure: tds[7].querySelector('input').value
+      TransportExp: tds[7].querySelector('input').value
     });
   });
 
@@ -573,18 +577,19 @@ function buildPayload() {
     });
 
     trips.push({
-      MemberNo: memberNo,
-      MainOrigin: mainOrigin,
-      MainDestination: mainDestination,
-      Frequency: frequency,
       Purpose: purpose,
-      TripLengthKm: tripLengthKm,
-      MainMode: mainMode,
-      TravelCost: travelCost,
-      TravelTimeMin: travelTime,
-      WaitingTimeMin: waitingTime,
-      TransfersCount: transfersCount,
-      Transfers: transfers
+      Start: mainOrigin,
+      End: mainDestination,
+      Frequency: frequency,
+      Mode: mainMode,
+      Distance: tripLengthKm,
+      Time: travelTime,
+      Cost: travelCost,
+      TransferCount: transfersCount,
+      Transfers: transfers.map(t => ({
+        From: t.StopName,
+        To: t.ModeToStop
+      }))
     });
   });
 
@@ -611,6 +616,10 @@ function buildPayload() {
 
   return {
     General: general,
+    Demographic: {
+      HHSize: $('#HHSize').value,
+      HHIncome: $('#HHIncome').value
+    },
     Members: members,
     Vehicles: vehicles,
     Trips: trips,
